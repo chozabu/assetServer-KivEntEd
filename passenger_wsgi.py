@@ -93,7 +93,7 @@ class rateLevel:
 		return (result)'''
 
 class queryLevels:
-	def GET(self):
+	def POST(self):
 		web.header("Content-Type", "text/html; charset=utf-8")
 		i = web.input()
 		print i
@@ -102,7 +102,8 @@ class queryLevels:
 			print levelid
 			result.append(db.ppLevels[levelid])
 		sortKey = "dateAdded"
-		if "sortKey" in i:sortKey = i.sortmethod
+		if "sortKey" in i:sortKey = i.sortKey
+		print sortKey
 		from operator import itemgetter
 		print result
 		#result = sorted(result, key=itemgetter(sortKey))
@@ -116,6 +117,7 @@ class queryLevels:
 		if "limit" in i:limit = int(i.limit)
 
 		if "reverse" in i:result.reverse()
+		print cursor, cursor+limit
 
 		result = result[cursor:cursor+limit]
 
