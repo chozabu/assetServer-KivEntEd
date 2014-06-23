@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 if 'alexpb' not in os.getcwd():
 	localServer = True
@@ -40,6 +41,7 @@ urls = (
 '/', 'home',
 '/uploadLevel', 'uploadLevel',
 '/downloadLevel', 'downloadLevel',
+'/queryLevels', 'queryLevels',
 '/listLevels', 'listLevels',
 '/createUser', 'createUser',
 '/listLevel', 'listLevel'
@@ -89,6 +91,36 @@ class rateLevel:
 		for score in db.scores[i.game].scores:
 			result += score[0] + ": " + str(score[1]) + "\n"
 		return (result)'''
+
+class queryLevels:
+	def GET(self):
+		web.header("Content-Type", "text/html; charset=utf-8")
+		i = web.input()
+		print i
+		result = []
+		for levelid in db.ppLevels:
+			print levelid
+			result.append(db.ppLevels[levelid])
+		sortKey = "dateAdded"
+		if "sortKey" in i:sortKey = i.sortmethod
+		from operator import itemgetter
+		print result
+		#result = sorted(result, key=itemgetter(sortKey))
+		#result = sorted(result, key=lambda k: k[sortKey])
+		result.sort(key=itemgetter(sortKey))
+		#result.sort(sortmethod)
+		print result
+		cursor = 0
+		limit = 20
+		if "cursor" in i:cursor = int(i.cursor)
+		if "limit" in i:limit = int(i.limit)
+
+		if "reverse" in i:result.reverse()
+
+		result = result[cursor:cursor+limit]
+
+		print "returning: ", result
+		return OK(result)
 
 
 def pythonicVarName(field):
@@ -144,12 +176,13 @@ class uploadLevel:
 		newLevel['author'] = i.author
 		newLevel['filename'] = fullname
 		now = str(datetime.datetime.now())
+		nowStamp = time.time()
 		if (isNew):
 			newLevel['rating'] = 2.5
 			newLevel['ratingCount'] = 0
-			newLevel['dateAdded'] = now
+			newLevel['dateAdded'] = nowStamp
 			newLevel['downloads'] = 0
-		newLevel['dateModified'] = now
+		newLevel['dateModified'] = nowStamp
 		newLevel['description'] = "description"
 		newLevel['screenshot'] = "none"
 		db.ppLevels[fullname] = newLevel
