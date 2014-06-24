@@ -25,6 +25,11 @@ db = None
 
 
 def loadDB():
+	dbname = "db.json"
+	if not os.path.isfile(dbname):
+		output = open(dbname, 'w')
+		output.write("{}")
+		output.close()
 	t = open('db.json', 'r').read()
 	f = json.loads(t)
 	globals()['db'] = jsonBunch.bunchify(f)
@@ -98,6 +103,7 @@ class queryLevels:
 		i = web.input()
 		print i
 		result = []
+		if "ppLevels" not in db:return fail("no levels in database!")
 		for levelid in db.ppLevels:
 			print levelid
 			result.append(db.ppLevels[levelid])
@@ -140,12 +146,10 @@ def pythonicVarName(field):
 	return id
 
 def authUser(i):
-	user = None
-	try:
-		user = db.users[i.author]
-	except KeyError:
+	if "users" not in db: return "No user accounts! create one!"
+	if i.author not in db.users:
 		return "User " + i.author + " not Found! Create an account."
-		pass
+	user = db.users[i.author]
 	print "passes:", user.passHash, i.passHash
 	if user.passHash != i.passHash:
 		return "Invalid Password!"
@@ -224,6 +228,12 @@ class downloadLevel:
 		else:
 			return fail("level not found")
 
+def makeUser(name,passHash):
+		user = {}
+		user['name'] = name
+		user['passHash'] = passHash
+		db.users[name] = user
+
 
 class createUser:
 	def POST(self):
@@ -232,19 +242,14 @@ class createUser:
 		passHash = i.passHash
 		if "users" not in db:
 			db.users = {}
-		try:
+		if name in db.users:
 			user = db.users[name]
 			if user.passHash == i.passHash:
 				return OK("Password Matches - You can upload!")
 			return fail("User Exists with different password.")
-		except KeyError:
-			pass
-		if i.creating == "false":
+		if "creating" in i and i.creating == "false":
 			return fail("Account not found")
-		user = {}
-		user['name'] = name
-		user['passHash'] = passHash
-		db.users[name] = user
+		makeUser(name,passHash)
 		return OK("Account " + name + " created!")
 
 
