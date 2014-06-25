@@ -108,8 +108,8 @@ class queryLevels:
 		result = []
 		if "ppLevels" not in db:return fail("no levels in database!")
 		for levelid in db.ppLevels:
-			print levelid
-			result.append(db.ppLevels[levelid])
+			level = db.ppLevels[levelid]
+			result.append(level)
 		sortKey = "dateAdded"
 		if "sortKey" in i:sortKey = i.sortKey
 		print sortKey
