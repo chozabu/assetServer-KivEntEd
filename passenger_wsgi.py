@@ -24,6 +24,8 @@ def log(*args):
 db = None
 
 
+if not os.path.exists("ppsshots"):os.makedirs("ppsshots")
+
 def loadDB():
 	dbname = "db.json"
 	if not os.path.isfile(dbname):
@@ -49,8 +51,9 @@ urls = (
 '/queryLevels', 'queryLevels',
 '/listLevels', 'listLevels',
 '/createUser', 'createUser',
-'/listLevel', 'listLevel'
-'/rateLevel', 'rateLevel',
+'/listLevel', 'listLevel',
+'/downloadSS', 'downloadSS',
+'/rateLevel', 'rateLevel'
 )
 
 def fail(input=None):
@@ -169,6 +172,14 @@ class uploadLevel:
 		output = open(namepath, 'wb')
 		output.write(i.levelData)
 		output.close()
+
+		import base64
+		ssdata = base64.b64decode(i.sshot)
+		namepath = "ppsshots/" + fullname+".png"
+		output = open(namepath, 'wb')
+		output.write(ssdata)
+		output.close()
+
 		newLevel = {}
 		isNew = True
 		if "ppLevels" not in db:
@@ -208,6 +219,14 @@ class listLevels:
 			levelList.append([level.name, level.filename])
 		return json.dumps(levelList)'''
 
+
+class downloadSS:
+	def GET(self):
+		#image/png
+		web.header("Content-Type", "image/png")
+		i = web.input()
+		namepath = "ppsshots/" + i.fullname
+		return open(namepath, 'r').read()
 
 class downloadLevel:
 	def POST(self):
