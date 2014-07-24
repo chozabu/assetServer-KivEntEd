@@ -1,0 +1,52 @@
+body {
+  background-color: e9f5f1;
+  color: #222222; 
+  text-shadow: rgba(250,250,255, .4) 0em 0em 4px;
+  font: 12pt Ubuntu, Verdana, Arial, Helvetica, sans-serif;
+  margin: 10px;
+}
+
+#chatout {
+  margin-left: 520px;
+}
+
+.PIPanel, body > ul > li {
+  background: white;
+  padding: 5px 10px;
+  border: #bbbbbb 1px solid;
+  text-align: left;
+  margin: 5px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px #bbbbbb;
+}
+
+.PIPanel:hover {
+  border: gray 1px solid;
+  border-color: #666666;
+}
+
+.PIPanel > span {
+  font-size: 10pt;
+}
+
+.PIPanel > div {
+  margin-top: 10px;
+}
+
+span.postname {
+  font-weight: bold;
+}
+
+span.postid {
+  font-size: 8pt;
+  float: right;
+}
+
+body > ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+  text-align: left;
+  float: left;
+  width: 480px;
+}

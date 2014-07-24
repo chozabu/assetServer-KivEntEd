@@ -53,8 +53,19 @@ urls = (
 '/createUser', 'createUser',
 '/listLevel', 'listLevel',
 '/downloadSS', 'downloadSS',
-'/rateLevel', 'rateLevel'
+'/rateLevel', 'rateLevel',
+'/(js|css|images|kee|ppsshots)/(.*)', 'static'
 )
+
+class static:
+	def GET(self, media, file):
+		try:
+			f = open(media+'/'+file, 'r')
+			return f.read()
+		except:
+			print "Unexpected error:", sys.exc_info()[0]
+			print "looking for file: " + media+'/'+file
+			return media+'/'+file # you can send an 404 error here if you want
 
 def fail(input=None):
 	return json.dumps({"result":"fail", "data":input})
@@ -277,7 +288,8 @@ class home:
 		#content = contentBaseDiv()
 		#content.add("test")
 		#return templateOrMinimal(content)
-		return OK("basic Functions working on kivented server")
+		return open("kee/index.html", 'r').read()
+		#return OK("basic Functions working on kivented server")
 
 	#return db.scores
 	def POST(self):

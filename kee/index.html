@@ -1,0 +1,201 @@
+<html>
+<head>
+  <title>Index</title>
+  <link rel="stylesheet" href="kee/ct.css" type="text/css">
+</head>
+<body>
+<h1>KivEntEd Levels</h1>
+<div id="forumsout"></div>
+<div id="chatoutcontainer">
+  <div id="chatheader"></div>
+  <div id="chatout"></div>
+</div>
+
+<script src="kee/zepto.min.js"></script>
+<script>
+var forumsout = document.getElementById("forumsout");
+/*var chatout = document.getElementById("chatout");
+var chatheader = document.getElementById("chatheader");
+var gForumID = getUrlVars()["forumID"];
+var gMsgID = getUrlVars()["msgID"];
+var onlymouseover = "false";//getUrlVars()["onlymouseover"];
+var gThreadList = [];
+
+var serverURL = 'http://www.kiventedserve.chozabu.net';*/
+var serverURL = '';
+
+//forumsout.innerHTML += "ho";
+$.post(serverURL+'/queryLevels', handleForums);
+var forumIDNameDict = {};
+
+function handleForums(forums){
+var fdata = JSON.parse(forums)
+fdata = fdata.data;
+console.log(fdata)
+//forumsout.innerHTML += "hi";
+//forumsout.innerHTML += forums;
+//forumsout.innerHTML += "ha";
+  for (fkey in fdata){
+  //{"rating": 2.5, "dateAdded": 1403638091.03871, "name": "thechozmachine", "screenshot": "none", "author": "Guest", "downloads": 2, "filename": "guestthechozmachine", "ratingCount": 0, "dateModified": 1403684117.484517, "description": "description"}
+    f = fdata[fkey];
+    console.log(f);
+    if (1){
+      var instantlink = '<a href="#?forumID='+f['filename']+'" onclick="loadForum(\''+f['filename']+'\');">'+f['name']+'</a>';
+      var image = '<img src="ppsshots/'+f['filename']+'.png" />';
+      //var instantlink = f['name'];
+      forumsout.innerHTML += "<li>"+instantlink+"<br>"+image+"</li>";
+      //forumIDNameDict[f['filename']] = f['name'];
+    }
+  }
+  /*if(gForumID){
+    loadForum(gForumID);
+  }
+  if(gMsgID){
+    $.getJSON('msg'+gMsgID+'.json', loadFullMsg);//showChildren(newThread);
+  }*/
+}
+
+function loadFullMsg(msgin){
+  onlymouseover = "false";
+  convertRSPost(msgin);
+  showChildren(msgin)
+  loadAllPosts();
+  
+}
+
+function loadForum(forumID){
+  gForumID = forumID;
+  console.log("requesting "+'forum'+forumID+'.json');
+  var loadallLink = '<a href="#" onclick="loadAllPosts();return false;">Load All Children</a>';
+  chatheader.innerHTML = "<h3>"+forumIDNameDict[forumID]+"</h3> "+loadallLink;
+  chatout.innerHTML = "";
+  $.getJSON('forum'+forumID+'.json', handleThreadList);
+}
+
+function loadAllPosts(){
+  onlymouseover = "false";
+  chatheader.innerHTML = "<h3>"+forumIDNameDict[gForumID]+"</h3> "
+  for (var f in gThreadList){
+    var threadpost = gThreadList[f];
+    $.getJSON('thread'+threadpost.msgId+'.json', showChildren);
+  }
+}
+
+function handleThreadList(threadList){
+  console.log("found threads:"+ threadList.length);
+  threadList.sort(function(a,b){return a.ts-b.ts});
+  gThreadList = threadList;
+  onlymouseover = "true";
+  for (var f in threadList){
+    var threadpost = threadList[f];
+    convertRSPost(threadpost);
+  }
+}
+
+function showChildren(cThread){
+  if (cThread.length == 0) return;
+  cThread.sort(function(a,b){return a.ts-b.ts});
+  for (var p in cThread){
+    var cPost = cThread[p];
+    convertRSPost(cPost);
+    if(onlymouseover == "false")
+      $.getJSON('thread'+cPost.msgId+'.json', showChildren);//showChildren(newThread);
+  }
+}
+
+function convertRSPost(fpost){
+  addPostHeaderToFeedPanel(fpost);
+  $.getJSON('msg'+fpost['msgId']+'.json', addPostToFeedPanel);//showChildren(newThread);
+}
+  
+function makeReplyPanel(msgId){
+  var replysListpanel = document.createElement("div");
+  replysListpanel.id=msgId+"replies";
+
+  var childPanel = document.createElement("div");
+  //childPanel.className = 'PIPanelOdd'
+  childPanel.appendChild(replysListpanel)
+  
+  return childPanel;
+}
+
+function getName(personID){
+  if(typeof(personID)=="undefined")
+    return "AC";
+  if(personID.length>2)
+    return personID;//bridge.getPeerName(personID)
+  return "Anon";
+}
+
+function tryLoadChildren(elem){
+  if(onlymouseover == "false") return;
+  if(elem.currentTarget.hasOwnProperty("requestedchildren")){
+    console.log("no retry");
+    return;
+  }else{
+    console.log("Loading...");
+    elem.currentTarget.requestedchildren = true;
+    var jsonfile = 'thread'+elem.currentTarget.id+'.json';
+    console.log(jsonfile);
+    $.getJSON(jsonfile, showChildren);//showChildren(newThread);
+  }
+}
+function addPostToFeedPanel(post){
+  finalPanel = document.getElementById(post.msgId);
+  // Define panel content
+    var permaLink = '<a href="#?msgID='+post.msgId+'">'+post.msgId+'</a>';
+  var newPanel = "<span class=\"postname\">"+getName(post.srcId)+"</span>, <span class=\"postdate\"> @"+new Date(post.ts*1000)+"</span>: <span class=\"posttitle\">"+post.title+"</span> <span class=\"postid\">(ID: "+permaLink+")</span>\n<div class=\"postmessage\">"+post.msg.replace(/(\n)+/g, '<br />')+"</div>\n";
+
+  //var newPanel = "<span class=\"postname\">"+getName(post.srcId)+"</span>, <span class=\"postdate\"> @"+new Date(post.ts*1000)+"</span>: <span class=\"posttitle\">"+post.title+"</span> <span class=\"postid\">(ID: "+post.msgId+")</span>\n<div class=\"postmessage\">"+post.msg.replace(/(\n)+/g, '<br />')+"</div>\n";
+
+  //var finalPanel = document.createElement("div");
+  finalPanel.className = 'PIPanel';
+  finalPanel.innerHTML = newPanel;
+  finalPanel.id = post.msgId;
+  finalPanel.appendChild(makeReplyPanel(post.msgId));
+  finalPanel.onclick = tryLoadChildren;
+  return true;
+}
+
+function addPostHeaderToFeedPanel(post){
+  if (document.getElementById(post.msgId)) return false;
+  // Define panel content
+  //onclick="loadForum(\''+f['forumId']+'\');"
+  var permaLink = '<a href="#?msgID='+post.msgId+'">'+post.msgId+'</a>';
+  var newPanel = "<span class=\"postname\">"+getName(post.srcId)+"</span>, <span class=\"postdate\"> @"+new Date(post.ts*1000)+"</span>: <span class=\"posttitle\">"+post.title+"</span> <span class=\"postid\">(ID: "+permaLink+")</span>\n<div class=\"postmessage\">"+post.msg.replace(/(\n)+/g, '<br />')+"</div>\n";
+
+  var finalPanel = document.createElement("div");
+  finalPanel.className = 'PIPanel';
+  finalPanel.innerHTML = newPanel;
+  finalPanel.id = post.msgId;
+  finalPanel.appendChild(makeReplyPanel(post.msgId));
+  finalPanel.onclick = tryLoadChildren;
+  //$.getJSON('thread'+cPost.msgId+'.json', showChildren);//showChildren(newThread);
+  //var imgPanel = document.createElement("img");
+  //bridge.getAvatarDetails(post.srcId).assignTo(imgPanel);
+  //finalPanel.insertBefore(imgPanel, finalPanel.firstChild);
+  var replypanel = document.getElementById(post.parentId+"replies");
+  if(replypanel && post.hasOwnProperty("parentId") && post.parentId.length>2){
+    //imgPanel.style.float="left";
+    replypanel.insertBefore(finalPanel, replypanel.firstChild);
+    //replypanel.appendChild(finalPanel);
+    //imgPanel.width/=3;
+    //imgPanel.height/=3;
+  }else{
+    chatout.insertBefore(finalPanel, chatout.firstChild);
+    //if (finalPanel.height < imgPanel.height)
+    finalPanel.height=100;//imgPanel.height;
+  }
+  return true;
+}
+  
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+  });
+  return vars;
+}
+</script>
+</body>
+</html>
