@@ -285,6 +285,7 @@ class createUser:
 
 class home:
 	def GET(self):
+		web.header("Content-Type", "text/html; charset=utf-8")
 		#content = contentBaseDiv()
 		#content.add("test")
 		#return templateOrMinimal(content)
