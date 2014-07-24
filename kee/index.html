@@ -40,10 +40,13 @@ console.log(fdata)
     f = fdata[fkey];
     console.log(f);
     if (1){
-      var instantlink = '<a href="#?forumID='+f['filename']+'" onclick="loadForum(\''+f['filename']+'\');">'+f['name']+'</a>';
+      //var instantlink = '<a href="#?forumID='+f['filename']+'" onclick="loadForum(\''+f['filename']+'\');">'+f['name']+'</a>';
+      var instantlink = f['name'];
       var image = '<img src="ppsshots/'+f['filename']+'.png" />';
+      var infos = 'Created by: '+f['author']+' @ '+f['dateAdded']
+      var infos2 = f['downloads']+' downloads. last change: '+f['dateModified']
       //var instantlink = f['name'];
-      forumsout.innerHTML += "<li>"+instantlink+"<br>"+image+"</li>";
+      forumsout.innerHTML += "<li>"+instantlink+"<br>"+infos+"<br>"+infos2+"<br>"+image+"</li>";
       //forumIDNameDict[f['filename']] = f['name'];
     }
   }
