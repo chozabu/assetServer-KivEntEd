@@ -5,6 +5,24 @@
 </head>
 <body>
 <h1>KivEntEd Levels</h1>
+<form action="">
+Sort by:
+<select name="sortType" id="sortType">
+
+<option value="name">Name</option>
+<option value="author">Author</option>
+<option value="rating">Rating</option>
+<option value="dateAdded">Date Added</option>
+<option value="dateModified">Date Modified</option>
+<option value="downloads">Downloads</option>
+</select>
+
+Per Page: <input type="number" name="perpage" id="perpage" min="1" max="100" value="10">
+Start at page: <input type="number" name="page" id="page" min="0" value="0">
+
+<input id="goButton" type="button" value="Go" onclick="updateListFromUI();" />
+<input type="checkbox" name="reversebox" id="reversebox" value="Reverse">Reverse sort<br>
+</form>
 <div id="forumsout"></div>
 <div id="chatoutcontainer">
   <div id="chatheader"></div>
@@ -13,7 +31,13 @@
 
 <script src="kee/zepto.min.js"></script>
 <script>
+//['name', 'author', 'rating', 'dateAdded', 'downloads', 'dateModified']
 var forumsout = document.getElementById("forumsout");
+var stype = document.getElementById("sortType");
+var page = document.getElementById("page");
+var perpage = document.getElementById("perpage");
+var reverse = document.getElementById("reversebox");
+
 /*var chatout = document.getElementById("chatout");
 var chatheader = document.getElementById("chatheader");
 var gForumID = getUrlVars()["forumID"];
@@ -25,13 +49,22 @@ var serverURL = 'http://www.kiventedserve.chozabu.net';*/
 var serverURL = '';
 
 //forumsout.innerHTML += "ho";
-$.post(serverURL+'/queryLevels', handleForums);
-var forumIDNameDict = {};
+
+updateListFromUI()
+function updateListFromUI(){
+	//		params = {"cursor":self.cursor, "limit":self.pagesize,"sortKey": self.sortSpinner.text}
+	//		if self.reverseButton.state == 'down':params['reverse']=True
+	var params = {"sortKey": stype.value, "cursor":page.value*perpage.value, "limit":perpage.value}
+	if (reverse.checked){ params.reverse = true;};
+	$.post(serverURL+'/queryLevels', params, handleForums);
+	var forumIDNameDict = {};
+}
 
 function handleForums(forums){
 var fdata = JSON.parse(forums)
 fdata = fdata.data;
 console.log(fdata)
+forumsout.innerHTML = "";
 //forumsout.innerHTML += "hi";
 //forumsout.innerHTML += forums;
 //forumsout.innerHTML += "ha";
