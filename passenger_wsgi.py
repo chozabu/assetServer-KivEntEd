@@ -25,6 +25,7 @@ db = None
 
 
 if not os.path.exists("ppsshots"):os.makedirs("ppsshots")
+if not os.path.exists("crashs"):os.makedirs("crashs")
 
 def loadDB():
 	dbname = "db.json"
@@ -47,6 +48,7 @@ loadDB()
 urls = (
 '/', 'home',
 '/uploadLevel', 'uploadLevel',
+'/uploadCrash', 'uploadCrash',
 '/downloadLevel', 'downloadLevel',
 '/queryLevels', 'queryLevels',
 '/listLevels', 'listLevels',
@@ -168,6 +170,20 @@ def authUser(i):
 	if user.passHash != i.passHash:
 		return "Invalid Password!"
 	return True
+
+class uploadCrash:
+	def POST(self):
+		i = web.input()
+		print "POST uploading crash"
+
+		now = str(datetime.datetime.now())
+
+		namepath = "crashs/" + now+"--" + str(i.version)
+		output = open(namepath, 'wb')
+		output.write(i.crashData)
+		output.close()
+
+		return OK("Success!")
 
 class uploadLevel:
 	def POST(self):
