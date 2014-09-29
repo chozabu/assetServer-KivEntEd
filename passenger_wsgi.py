@@ -89,6 +89,7 @@ class listLevel:
 
 class crashLogs:
 	def GET(self):
+		web.header("Content-Type", "text/html; charset=utf-8")
 		files = os.listdir('crashs')
 		result = "".join('<a href="crashs/'+f+'" </>'+f+'</a><br/>' for f in files)
 		return result
