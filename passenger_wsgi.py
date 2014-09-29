@@ -49,6 +49,7 @@ urls = (
 '/', 'home',
 '/uploadLevel', 'uploadLevel',
 '/uploadCrash', 'uploadCrash',
+'/crashLogs', 'crashLogs',
 '/downloadLevel', 'downloadLevel',
 '/queryLevels', 'queryLevels',
 '/listLevels', 'listLevels',
@@ -56,7 +57,7 @@ urls = (
 '/listLevel', 'listLevel',
 '/downloadSS', 'downloadSS',
 '/rateLevel', 'rateLevel',
-'/(js|css|images|kee|ppsshots)/(.*)', 'static'
+'/(js|css|images|kee|ppsshots|crashs)/(.*)', 'static'
 )
 
 class static:
@@ -86,6 +87,11 @@ class listLevel:
 		else:
 			return fail("level not found")
 
+class crashLogs:
+	def GET(self):
+		files = os.listdir('crashs')
+		result = "".join('<a href="crashs/'+f+'" </>'+f+'</a><br/>' for f in files)
+		return result
 class rateLevel:
 	def GET(self):
 		return OK(db.ppLevels)
