@@ -50,6 +50,7 @@ urls = (
 '/uploadLevel', 'uploadLevel',
 '/uploadCrash', 'uploadCrash',
 '/crashLogs', 'crashLogs',
+'/dlCrashLog', 'dlCrashLog',
 '/downloadLevel', 'downloadLevel',
 '/queryLevels', 'queryLevels',
 '/listLevels', 'listLevels',
@@ -91,8 +92,17 @@ class crashLogs:
 	def GET(self):
 		web.header("Content-Type", "text/html; charset=utf-8")
 		files = os.listdir('crashs')
-		result = "".join('<a href="crashs/'+f+'" </>'+f+'</a><br/>' for f in files)
+		#result = "".join('<a href="crashs/'+f+'" </>'+f+'</a><br/>' for f in files)
+		result = "".join('<a href="dlCrashLog?fullname='+f+'" </>'+f+'</a><br/>' for f in files)
 		return result
+
+class dlCrashLog:
+	def GET(self):
+		#image/png
+		web.header("Content-Type", "text/plain")
+		i = web.input()
+		namepath = "crashs/" + i.fullname
+		return open(namepath, 'r').read()
 class rateLevel:
 	def GET(self):
 		return OK(db.ppLevels)
