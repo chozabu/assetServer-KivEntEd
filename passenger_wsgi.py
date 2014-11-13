@@ -6,10 +6,10 @@ if 'alexpb' not in os.getcwd():
 	localServer = True
 else:
 	localServer = False
-if localServer == False:
-	INTERP = "/home/alexpb/bin/python2.6"
-	if sys.executable != INTERP: os.execl(INTERP, INTERP, *sys.argv)
-sys.path.append(os.getcwd())
+#if localServer == False:
+#	INTERP = "/home/alexpb/bin/python2.6"
+#	if sys.executable != INTERP: os.execl(INTERP, INTERP, *sys.argv)
+#sys.path.append(os.getcwd())
 
 import jsonBunch
 
